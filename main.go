@@ -1,19 +1,25 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
+
+type Message struct {
+	Text string `json:"text"`
+}
+
+func helloAPI(w http.ResponseWriter, r *http.Request) {
+	message := Message{Text: "Hello, Go Microservice!"}
+	json.NewEncoder(w).Encode(message)
+}
 
 func main() {
-	var name string = "Go Microservices"
-	age := 31
-	const pi = 3.14
-	fmt.Println("Hello, Go!", name, age, pi)
-	for i := 0; i < 5; i++ {
-		fmt.Println(i)
-	}
-
-	if age >= 18 {
-		fmt.Println("Adult")
-	} else {
-		fmt.Println("Minor")
-	}
+	r := mux.NewRouter()
+	r.HandleFunc("/api/hello", helloAPI).Methods("GET")
+	fmt.Println("Microservice running on :8080")
+	http.ListenAndServe(":8080", r)
 }
